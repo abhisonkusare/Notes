@@ -1,0 +1,32 @@
+WHAT DECIDES A CURRENCIES STRENGTH ?
+
+In earlier days the currency's value was decided based on physical material (GOLD). Like 1 US Dollar = 1 Ounce of Gold. 
+But as economies grew, war, more foreign trades, more production and other issues, it was getting harder to keep that much gold to account for ever unit, thus this system was stopped. 
+
+Came the system of FIAT currency by the time of 1970. Here the currency's value is not based on any physical thing. It is based on supply and demand of that currency. If people want that currency, then the value of that currency will increase, and vice versa.
+
+What are the factors that affected this supply and demand ?
+1. Inflation
+   Inflation means a currency is losing it's value. Example, in 2022 with 10 dollar you could buy 2 loafs of bread, but in 2024 you could buy only 1 loaf with 10 dollar. No one wants to get a currency who's value is decreasing. Thus the     
+   demand for it decreases and value in the forex market.
+
+2. Interest rates
+   Interest rates are the percentage increase in principal amount per year. Lets say, I gave money to country A (in forms of bond - 1000 units for 5% interest for a period of 10 years. So after the bond is completed, I should get back,   
+   1000 + 0.05*1000*10 = 1500 units.), on an interest rate, thus I get the demand for the currency for the country A increased, which in thus will increase the value of currency A. More people will be interested to buy bonds from those  
+   countries where the interest rates are more (as it means higher returns). 
+   But a country cannot just set any interest rate it desires, as the people of its own country will face difficulty in borrowing money for purposes like buying houses, starting businesses, etc.
+
+3. Export/Import
+   If a country A wants to buy goods from country B, then country A has to use country B's currency to buy the goods. This increases the demand of country B's currency, thus increasing the value of country B's currency. 
+
+4. Big companies expansion in foreign countries
+   If a big company wants to expand in other country, they will have to use that countries resources, labour, and pay for those things, in that country's currency. Thus the demand for the host currency will increase and thus the value. 
+   The factors which makes big companies decide if they want to expand in a certain countries are stable economical situation, political situation, sanctions, etc. Things like unstable government policies will deter any company from 
+   investing in that country as there is too much uncertainty and can go in lose at anytime. If there are riots in the host country, then there will be issues will the labours, raw materials, etc, will loses for the company. A company 
+   will only like to invest itself into other country if they get a good environment for growth. 
+
+What can a country with a very weak currency can do ?
+They can peg their currency to other strong currency. Like country A can say that their currency is 0.5 * US dollar. This way if that country want to exchange their money they can directly exchange it on that set amount. But this has a risk as you are completely dependent of the other country for the values of your currency. You don't have any control over it. If the other countries goes in shambles, then your currency will go down as well, even if you were doing good.
+
+Why is there no common world currency ?
+Issue in one place will affect the entire world (enough if the entire world is not at fault, they will suffer because of the source). You will face inflation because there are political disturbance in some country thousands of miles away.

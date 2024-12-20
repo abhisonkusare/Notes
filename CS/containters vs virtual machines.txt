@@ -1,0 +1,16 @@
+CONTAINERS VS VIRTUAL MACHINES
+
+Before all this, companies use to buy a server to run a single application. If they wanted to run another application, they would get another server. This was very cost inefficient as well as server inefficient. With modern server's capabilities, it was highly likely that only 10% of the server's capacity was getting used.
+
+VIRTUAL MACHINES
+For virtual machines, we would need a hardware/server. Next element is a hypervisior which acts as a overlooking for all the VMs. On top of this are the virtual machines. A virtual machine will be assigned from resources/memory from the main server. It is have its own operating system. And then the application will be on top of this. 
+The advantages of this were, that multiple application would be ran on a single server. We could use different operating systems like Linux, windows, mac.
+The disadvantages of this were, a virtual machine in itself is huge as it is bundled with the entire operating system. It would take time to boot. It consumed more ram and memory from the server. 
+
+CONTAINERS
+Containers contains the application, configurations, all the dependencies to run the application, images, etc. Containers can be created using tools like docker.
+For containers we would need a hardware/server. The server will have its own operating system. To run containers, we need a container engine which is the next element after the operating system. Over these, we have our containers which have our applications. 
+The advantages of containers are, they contains all the things required to run the application. They are light weight and can be shared easily. They remove the issue of 'it runs in my machine'. They take less ram and memory of the server. 
+The disadvantages of containers are, they are dependent of the server's operating system. If the container is to be run on a Linux OS, then the configuration should be of the Linux OS, as with windows and mac. 
+
+Currently we can use containers inside virtual machines, which removes the operating system issue and the main issue of 'it runs in my machine'.

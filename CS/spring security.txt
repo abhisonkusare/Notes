@@ -1,0 +1,28 @@
+In Spring we have everything as servlet container. Like Tomcat...
+
+When we get a http request, before coming to the controller, the request is intercepted by the Front Controller, that is the Dispatcher Servlet. This dispatcher Servlet redirects the request to the correct controller.
+Also we have some filter chain by default.
+
+In spring security, some more filter chain gets added. When we get http request, the request goes through the Filter chain one by one and then comes to Dispatcher Servlet. Then from here goes to our controller.
+
+Now we can config these filters. To do that we create a class with @Configuration annotation and @EnableWebSecurity annotation. The @EnableWebSecurity annotation tells the spring, that take my configuration for the filters. We can extend the class with WebSecurityConfigurerAdaptor, and then override the methods, which filter we what to change.
+
+The most basic would be to change the SecurityFilterChain/SecurityHttpFilter(need to confirm) Object. So we create a bean which returns this object. The method takes HttpSecurity Object. In HttpSecurity object we can configure things like disabling csrf (cross site reference forgery), tell which endpoints should be authenticated, which should be permitted without authentication, session management, login methods like formLogin or httpBasic, etc.
+
+When an http request contains the user credentials (username, password, token, etc.) it is first validated by AuthenticationProvider. Thus we can provide our implementation of the AuthenticationProvider by creating a bean which returns a AuthenticationProvider Object. There are different types of authenticationProviders. One is DaoAuthenticationProvider which authenticates using database information. 
+
+For DaoAuthenticationProvider we need to set few things, like the password encoder and UserDetailsService. We can provide our implementation of the UserDetailsService by creating a class which implements the UserDetailsService interface. The UserDetailsService interface has one method, that is loadUserByUsername and returns a UserDetails interface. The UserDetails interface can be implemented by us. And this requires us to get values like the user authorities, is the user active, is the user credentials not expired, username etc.
+
+If a developer logs into the database, he can now see the username and password of all the users. This is not a good approach, we need to secure the application from this as well. So when we register a user, we need to encrypt the password before saving it in the database. This can be done using Bcrypt Password encoder or any other.
+
+But now the database contains the encrypted password, and when we try to login we wont be able as it is now checking the password provided with the encrypted one. This can be fixed by mentioning the password encrypted in the authenticationProvider's password encoder method. Mention the same passcordEncrypter which was used while registration. 
+
+Now our new issue is that, we do not want to pass our password and username credentials everytime with all the request. Once we have logged in, we some be able to continue working. This is be achieved with the help of generating a token when a user logs in, and then using this token to valid the subsequent request from the user.
+
+One such token which can be used is called JWT (Json Web Token). JWT contains three parts. Header, Body and a secret. The header contains the algo with which the token was encoded with. The body contains the claims information, like the username, issued at, expiration time, etc. 
+
+To achieve this, first we will add some dependencies for the JWT, that are the jjwt-api, jjwt-impl, and jjwt-jackson. While user login, in our service layer, we will get the username and password. We use to generate the JWT token and send it as the response.
+
+For the further request, we will not be doing basic authentication, but now first we need to check the JWT token. Thus, we will add a filter before our UsernamePasswordAuthenticationFilter. We need to create our JwtFilter class. The JwtFilter class extends OncePerRequestFilter class where we need to implement an method which takes the request, response and the filterChain as the parameters. From the request we fetch the Authorization header value and fetch the token. Using the token we fetch the username (This is done is JwtService class. From the token we decode it, fetch all claims, fetch the subject which is the username). From the username we fetch the UserDetials object. We validate our token in the JwtService. If the token is valid, then we create one authToken object and set it in SercurityContextHolder object. And we move forward with the filterChain.
+
+

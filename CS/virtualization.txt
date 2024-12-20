@@ -1,0 +1,22 @@
+VIRTUALIZATION
+Simulating the hardware, software, networking is called virtualization.
+A virtual machine it allocated with the server's hardware like CPU, RAM, and disk space. The virtual machine will have its own operating system. They act and perform like an individual servers in themselves.
+
+HYPERVISIOR
+Hypervisiors are the components that build and maintain the virtual machines. 
+There are two types of hypervisiors. 
+
+TYPE I HYPERVISIOR
+These are built on top of bare metal servers. These servers do not have an operating system of their own. Here the server will have motherboard, on which we have the CPUs, RAMs, etc. It will have the disk storages. On top of this the hypervisior is installed. Some of the type I hypervisiors are VMWare EXXI, Microsoft-hyperX, etc. 
+These are mainly used by enterprises.
+
+TYPE II HYPERVISIOR
+Here the server will have it hardware and its own operating system. On top of it we have the hypervisior which will create the virtual machines. These are mainly used in personal computer, where we want to test our application in different OS, etc.
+
+ADVANTAGES OF VIRTUAL MACHINES
+1. PORTABILITY: Virtual machines are software files and can be easily moved from one physical server to another. 
+2. SERVER CAPACITY: Normally a server will not have enough powerful application which can challenge it to use its capacity to the fullest. With virtual machines, a server can have multiple of them, which will run multiple applications and
+                    will make the server reach its capacity.
+3. COST AND ELECTRICITY SAVING: It reduces the use of multiple servers, thus reducing the electricity, floor space and extra machines required.
+4. DISASTER RECOVERY: As these are just a software file, it can be stored as a backup in multiple other servers and be used when the primary server is damaged/corrupted etc.
+5. MAINTAINANCE: Easier to maintain.

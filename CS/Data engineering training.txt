@@ -1,0 +1,599 @@
+Lecture 1 :
+
+Predictive maintenance me use kiya tha big data
+Most of the data is unstructured data
+Data can be categories into human generated data and computer generated data (logs, machines talking to machines)
+Telecommunication, stock exchange, internet, …. Generate huge volume of data
+
+
+6 V of Big Data
+Volume : 
+Velocity : mostly done in batch, less in streaming
+Variety :
+Veracity : correctness of data
+Variability : inconsistencies in the data
+Value : 
+
+
+For the  RDBMS system : ACID transactions which requires frequent update with the scale of terabyte was difficult
+thus got introduced the distributed system.
+
+RDBMS : transactions systems have evolved now. Earlier it could only do vertical scaling. Now we can easily do horizontal scaling.
+
+If data has lot of nulls for many columns, it is not a good design when dealing with big data. This will take the space in the table.
+
+Column oriented databases to be used. (why?? to clarification)
+
+NoSQL databases came in picture like MangoDB which provide the key value pairing type storage.
+
+Hadoop also helped in processing lot of unstructured data
+
+Parallel processing
+Instead of moving the data to the code, the code is moved to the place where the data is present. Data processing is done locally. 
+
+Challenges of parallel processing
+
+Super computers were present only for very specific use case. It was not multi purpose. The hardware is expensive.
+
+Hadoop provided cheaper community based alternative for the super computer with distributed processing
+
+Spark use RDD (Resilient Distributed Dataset). Internal data API (verify this statement)
+
+By default the data is replicated 3 times for fault tolerance and data safety.
+
+Big data is more of the ELT kind of an application. We extract, load and then transform the data. 
+In Big Data we want to load the raw data first, 
+some situation we need historical data which can help with better inferencing. 
+Big data is write once, read many. Thus, storage is getting compromised by this data can be used multiple times for the analysis.
+
+Most of the things are running on open source platforms.
+Make sure when we are working in Big Data, there is no vendor locking, or any propriety file system.
+
+MASTER-SLAVE ARCHITECTURE
+Name node stores metadata, data node health check (every 3s gets heartbeat signal). memory, disk space available on data node. Configuration settings. Replication of data. 
+Due to security reason a lot of companies do not talk to the name node directly.
+
+Secondary name node -> backup of the name node. As the name node might be the single point of error. Ever one hour by default the backup is taken. 
+
+Data node: where data is present and processing takes place. 
+
+Job tracker : JVM responsible for managing status of job. Submits the application code to task trackers. Centralised job scheduler. Takes to different slave machines and executes and coordinates with the task trackers. Takes status from the task trackers. Is aware of what and which task are getting executed in which machine. Works with name node since name node have the information regarding what data is present at what place.
+
+Task trackers: Daemon which executes the code. Present in data node. Runs on slave machines.
+
+Job: Collection of programs. To be applied on the data.
+
+Hadoop is installed on top of a host operating system.
+
+cluster of servers :  group of servers connected via high connectivity fiber optic cable
+
+For testing we should use Pseudo distributed node. Here we have separate JVM for different Hadoop systems.
+
+Fully distributed mode (cluster mode) : separate host for the different JVMs. All services run on dedicated machines.
+
+Client talks to name node and gets the metadata and status of the data node. Then the client itself transfer data/code to the data node
+
+In Hadoop 1.0, there was no secondary name node. Backup system was not there. The name node was the single point of failure.
+From Hadoop 2.0, there came the concept of taking backup. 
+We also have an active name node, along with primary name node and secondary name node.
+
+In Hadoop 1.0, the programs need to be present in the form of Jars. 
+In Hadoop 2.0, multiple interfaces are now allowed, for python, scala, SQL, etc.
+
+If we want to work with Hadoop file system, then we need to have a basic understanding of the unix file system.
+
+Data is split into block of 128 MB. If the data is 140 MB, then there will be two blocks, one of 128 MB and another of 12 MB. 
+
+Client writes the first copy of the data(block). The data node then creates the replication of the block into other data nodes.
+
+HDFS not to be used for many small files. It is better with files high in size.
+Not to use in read many write many scenario. 
+
+Earlier big data was made for batch processing, but with improvement in quicker I/O, processing, it is also moving to the streaming side as well.
+
+Namespace : part of name node. Keeps hierarchy of the data
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+LECTURE 3: (Tuesday, 22-10-2024)
+
+HADOOP YARN
+Yet Another Resource negotiator. cluster management system.
+MapReduce limited to batch processing. YARN opened the gates for the streaming data as well.
+Core components of YARN : Resource manager(master JVM))(primary machine) , Node manager(runs of slave)(contains the containers)(containers have code), Application master (in resource manager)
+Node manager talks to application master. Application master talks to resource manager and allocates the memory. 
+Each application will have application master. Each runs its seperate container. 
+Client connects to the master JVM. 
+JobTracker and TaskTrackers are replaced with resource manager, node manager, and application master. Job tracker and task trackers were map reduce dependent. YARN removed that limitation.
+Three schedulers : FIFO, capacity, Fair. Hadoop 1.0 had only FIFO scheduler.
+
+Spark - interactive main memory processing.
+
+Different data injection tool build on top of Hadoop. High I/O intensive jobs. 
+
+Apache Flume (data injection), sqoop (data injection, import and export), Kafka (can talk to multiple consumer and producer using broker).
+
+APACHE FLUME 
+(streaming data, logs data)
+components : source (file system, web, Avro(data serialized), thrift, APIs, custom, exec, etc.,), channels (data is transported) (memory channel, file based channel, JDBC, custom), sink (HDFS, RDBMS, thrift, HBASE, Avro, custom)
+combination of these three is called agent
+channel connects source and sink. 
+If data is produced at high throughput, and consumption is slow, we can create multiple agents. Output of one sink can be input to another agent's source. This way the data is flowing and we do not have slipage.
+We can also have multiple producers and single consumer, here we use multiple agents to connect to one agent which writes data into the consumer.
+One producer and multiple consumers.
+Flume is for events data. Primary use case events, stream data. 
+Does not provide much dynamic scaling, as it runs in a single host. 
+Web server data extraction.
+
+Command to start the flume is flume-ng command. Passing configuration for the agent. Flume will run on the host.
+
+Multiplexing : sending different data to different channels, sinks based on defined value check.
+
+Limitation of flume : runs all the processes on single machine. Does not support distributed. No data replication. We cannot change the number of producer and consumers dynamically. Same for the sources and sink. To change it, the service need to be stopped, make changes in the configuration file and then restarted. One sink can read from only one channel. If multiple sinks want the same data, we need to create multiple channels from a source. 
+
+Most commonly used for server log extraction. 
+
+APACHE SQOOP
+structured data consumption from RDBMS systems to Hadoop systems, process this  data and then exports the data to the RDBMS systems.
+sqoop internally converts the import to mapReduce job. 
+Need a jar file to connect to a database. It should be present in the library folder of the sqoop folder. This is important to talk to the database.
+Sqoop uses 4 mapper by default.
+In sqoop, it will not import the data if the target-dir is already present. You either need to do --increamental append or do it in new target directory.
+
+SQOOP COMMAND
+sqoop import --connect jdbc:mysql://localhost/sample --username root --password root --table emp --split-by empno --where "empno>7782" --target-dir /user/hduser/sqoop-import  
+sqoop import --connect jdbc:mysql://localhost/sample --username root --password root --table emp --split-by empno --incremental append --check-column empno --last-value 7934
+sqoop --list-databases --connect jdbc:mysql://localhost/sample --username root --password root
+sqoop --list-databases --connect jdbc:mysql://localhost/sample --username root --P           :using the P prompt the user to insert the password and help with password safety
+sqoop import --connect jdbc:mysql://localhost/sample --username root --password root --table emp --target-dir --export-dir /user/hduser/sqoop-import --update-mode allowinsert
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+KAFKA
+Developed at LinkedIn. 
+Multiple producers, multiple consumers, multiple brokers. Reading and writing messages. Provides partitioning, data replication. 
+Publisher-subscriber architecture. Publish events data. Much broader scope of data sources compared to Apache flume. More flexible. More robust architecture. More scalable. 
+Real time data transfer. Low Latency. Bring data from different sources to consumers. Consumers can be HDFS, RDBMS system, etc.
+Transactions are captured through logs, used by procedures. Producer writes messages to topic. Topic is a logical unit.
+Kafka cluster is a distributed system. Data is written in log files. (abhi confusing ho raha hai).
+Logs have retention policy. To make it highly available and avoid data loss. By default it is 7 days. 
+Consumers can read the data both sync and async (need to confirm for sync). 
+Consumers basically subscribe to the topic. Polling of the data happens. The consumer puts the read request from the broker and then pulls the data.
+Each topic is partition in 3 parts. To achieve parallelism in reading. Once data is read, it is deleted in the queue. 
+Writing can be sequential or parameter based.
+Messages are persisted in the disk.
+Every server has server configuration file.
+
+
+ZOOKEEPER
+Administrative unit. 
+Centralised management of service. When we do partitioning, data written across multiple broker, zookeeper elects the leader where first time data is written, and then the leader handles the further writes in other broker.
+Does coordination. Handles stream, connectivity, cluster services, configuration to Kafka server, keeps track of broker, their status, primary gatekeeper.
+
+HANDS FOR THE ZOOKEEPER
+navigate to /usr/local/kafka/ 
+to look at the zookeeper properties
+sudo bin/zookeeper-server-start.sh config/zookeeper.properties 
+
+To start the zookeeper server
+bin/zookeeper-server-start.sh config/zookeeper.properties
+it will start in the port specified in the zookeeper.properties file
+
+To start kafka server
+bin/kafka-server-start.sh config/server.properties
+it will start on the port specified in the server.properties file
+
+create a kafka topic
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic news
+
+create a kafka console producer : 9092 is the broker port
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic news
+
+create a kafka console consumer listening to the news topic
+bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic news --from-beginning
+
+creating some server.properties to create more kafka brokers
+cp config/server.properties config/server-1.properties
+cp config/server.properties config/server-2.properties
+config/server-1.properties:
+broker.id=1
+listeners=PLAINTEXT://:9093
+log.dir=/tmp/kafka-logs-1
+config/server-2.properties:
+broker.id=2
+listeners=PLAINTEXT://:9094
+log.dir=/tmp/kafka-logs-2
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+LECTURE : 5th November
+spark streaming
+start a natcat server in localhost : nc -lk 7777
+started the natcat server in localhost at port 7777
+
+stop the spark context : sc.stop()
+import some packages : import org.apache.spark._
+			import org.apache.spark.streaming._
+create a new sparkConfig : val conf = new SparkConf().setMaster("local[2]").setAppName("Streaming-Example")
+create a streaming context : val ssc = new StreamingContext(conf, Seconds(1))
+create a stream : val lStream = ssc.socketTextStream("127.0.0.1", 7777)
+write the code what to do with the input stream : 
+	val word = lStream.flatMap(x=>x.split(" ")).countByValue()
+	word.print()
+Start the streaming context : ssc.start()
+
+
+Spark SQL
+case class Employee(name: String, salary: Long, grade: String)
+
+
+Lecture : 7th November
+SPARK GRAPHX
+
+scala> import org.apache.spark.graphx._
+import org.apache.spark.graphx._
+
+scala> import org.apache.spark.rdd.RDD
+import org.apache.spark.rdd.RDD
+
+scala> val vertexArray = Array((1L, ("Yeshua",39)), (2L,("Miryam",43)), (3L, "Peter",68)), (4L, ("James",64)), (5L,("John",93)), (6L,("Paul",60)), (7L,("Thomas",72)))
+<console>:1: error: ';' expected but ',' found.
+val vertexArray = Array((1L, ("Yeshua",39)), (2L,("Miryam",43)), (3L, "Peter",68)), (4L, ("James",64)), (5L,("John",93)), (6L,("Paul",60)), (7L,("Thomas",72)))
+                                                                                  ^
+
+scala> val vertexArray = Array((1L, ("Yeshua",39)), (2L,("Miryam",43)), (3L,( "Peter",68)), (4L, ("James",64)), (5L,("John",93)), (6L,("Paul",60)), (7L,("Thomas",72)))
+vertexArray: Array[(Long, (String, Int))] = Array((1,(Yeshua,39)), (2,(Miryam,43)), (3,(Peter,68)), (4,(James,64)), (5,(John,93)), (6,(Paul,60)), (7,(Thomas,72)))
+
+scala> val edgeArray = Array(Edge(2L,1L, 33), Edge(3L, 1L,4), Edge(4L,1L,3), Edge(6L,1L,0))
+edgeArray: Array[org.apache.spark.graphx.Edge[Int]] = Array(Edge(2,1,33), Edge(3,1,4), Edge(4,1,3), Edge(6,1,0))
+
+scala> val vertexRDD: RDD[(Long,(String,Int))] = sc.parallelize(vertexArray)
+vertexRDD: org.apache.spark.rdd.RDD[(Long, (String, Int))] = ParallelCollectionRDD[0] at parallelize at <console>:30
+
+scala> val edgeRDD: RDD[Edge[Int]] = sc.parallelize(edgeArray)
+edgeRDD: org.apache.spark.rdd.RDD[org.apache.spark.graphx.Edge[Int]] = ParallelCollectionRDD[1] at parallelize at <console>:30
+
+scala> val graph: Graph[(String,Int),Int] = Graph(vertexRDD, edgeRDD)
+graph: org.apache.spark.graphx.Graph[(String, Int),Int] = org.apache.spark.graphx.impl.GraphImpl@28df2da8
+
+scala> vertexRDD.collect.foreach(println)
+(1,(Yeshua,39))
+(2,(Miryam,43))
+(3,(Peter,68))
+(4,(James,64))
+(5,(John,93))
+(6,(Paul,60))
+(7,(Thomas,72))
+
+scala> edgeRDD.collect.foreach(println)
+Edge(2,1,33)
+Edge(3,1,4)
+Edge(4,1,3)
+Edge(6,1,0)
+
+scala> graph.triplets.collect.foreach(println)
+((2,(Miryam,43)),(1,(Yeshua,39)),33)
+((3,(Peter,68)),(1,(Yeshua,39)),4)
+((4,(James,64)),(1,(Yeshua,39)),3)
+((6,(Paul,60)),(1,(Yeshua,39)),0)
+
+scala> for((id,(person,timeline)) <- graph.vertices.filter(_._2._2 > 60).collect)println(s"$person lived up to $timeline A.D.")
+James lived up to 64 A.D.
+Peter lived up to 68 A.D.
+Thomas lived up to 72 A.D.
+John lived up to 93 A.D.
+
+scala> graph.triplets.foreach(t=>println(s"${t.srcAttr._1} personally knows ${t.dstAttr._1}"))
+Miryam personally knows Yeshua
+Peter personally knows Yeshua
+James personally knows Yeshua
+Paul personally knows Yeshua
+
+scala> graph.triplets.filter(_.attr>10).foreach(t=>println(s"${t.srcAttr._1} knows ${t.dstAttr._1} for {t.attr} years"))
+Miryam knows Yeshua for {t.attr} years
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+LECTURE : 12 November
+Spark shared variables
+Accumulators
+Broadcast
+
+Accumulator : Only driver can read its value. Workers can write only not read.
+Helps in faster compute rather than calling count/collect/(filter-reduce) etc.
+
+Preemptive scheduling using accumulator. If a job is taking a long time, spark can start that job in other node.
+
+Broadcast hands-on :
+import org.apache.spark.sql.SparkSession
+
+val states = Map(("NY", "New York"),("CA","California"),("FL","Florida"))
+val countries = Map(("USA","United States of America"),("IN","India"))
+countried: scala.collection.immutable.Map[String,String] = Map(USA -> United States of America, IN -> India)
+
+scala> val broadcastStates = spark.sparkContext.broadcast(states)
+broadcastStates: org.apache.spark.broadcast.Broadcast[scala.collection.immutable.Map[String,String]] = Broadcast(0)
+
+scala> val broadcastCountries = spark.sparkContext.broadcast(countries
+broadcastCountries: org.apache.spark.broadcast.Broadcast[scala.collection.immutable.Map[String,String]] = Broadcast(1)
+
+scala> val data = Seq(("James", "Smith","USA","CA"), ("Michael","Rose","USA","NY"),("Robert","Williams","USA","CA"), ("Maria","Jones","USA","FL"))
+data: Seq[(String, String, String, String)] = List((James,Smith,USA,CA), (Michael,Rose,USA,NY), (Robert,Williams,USA,CA), (Maria,Jones,USA,FL))
+
+scala> val rdd = spark.sparkContext.parallelize(data)
+rdd: org.apache.spark.rdd.RDD[(String, String, String, String)] = ParallelCollectionRDD[0] at parallelize at <console>:26
+
+scala> rdd.collect
+res0: Array[(String, String, String, String)] = Array((James,Smith,USA,CA), (Michael,Rose,USA,NY), (Robert,Williams,USA,CA), (Maria,Jones,USA,FL))
+
+scala> val rdd2 = rdd.map(f=>{
+     | val country = f._3
+     | val state = f._4
+     | val fullCountry = broadcastCountries.value.get(country).get
+     | val fullState = broadcastStates.value.get(state).get
+     | (f._1, f._2, fullCountry, fullState)})
+rdd2: org.apache.spark.rdd.RDD[(String, String, String, String)] = MapPartitionsRDD[1] at map at <console>:36
+
+scala> println(rdd2.collect().mkString("\n"))
+(James,Smith,United States of America,California)
+(Michael,Rose,United States of America,New York)
+(Robert,Williams,United States of America,California)
+(Maria,Jones,United States of America,Florida)
+
+broadcastCountries.destroy to destroy the broadcast variable
+
+
+
+Reduce the number of stages, reduce the shuffling to improve the performance. Write code in such way.
+Stage is logical boundary where data shuffling happens
+
+Looked into scheduling as well, FIFO, Fair scheduling.
+Group multiple jobs into a pool and apply fair scheduling to the jobs in the pool and other jobs outside the pool will have different scheduling.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+LECTURE 14th November, 2024
+
+LINEAGE of a RDD
+scala> val lines = sc.textFile("/usr/local/spark/logs/")
+scala> val info = lines.filter(_.contains("INFO"))
+scala> info.collect
+scala> val lineage=info.filter(_.contains("SecurityManager")).map(_.split(''))                                                                                                                                                             )
+scala> lineage.collect
+
+scala> lineage.toDebugString 
+res2: String =
+(2) MapPartitionsRDD[4] at map at <console>:28 []
+ |  MapPartitionsRDD[3] at filter at <console>:28 []
+ |  MapPartitionsRDD[2] at filter at <console>:26 []
+ |  /usr/local/spark/logs/ MapPartitionsRDD[1] at textFile at <console>:24 []
+ |  /usr/local/spark/logs/ HadoopRDD[0] at textFile at <console>:24 []
+
+scala> lineage.getNumPartitions
+res3: Int = 2
+
+(2) beneath the lineage.toDebugString method tells us about the number of partitions
+the lineage of the rdd is from bottom to top
+
+MACHINE LEARNING USE CASES
+
+MLLib is a bit old one. It use the RDD.
+spark.ML use dataframes which is faster.
+
+MLLib : DataTypes : local vectors and matrices and distributed matrices.
+
+https://medium.com/@hafizmujadid00/spark-structured-streaming-kafka-integration-handbook-6dfb99c5ddea
+
+
+LECTURE : 21 November
+INTRODUCTION TO STORYTELLING
+UNDERSTANDING VISUALS AND NARRATIVES
+GUIDED STORYTELLING
+UNDERSTANDING YOUR AUDIENCE
+Different types of charts
+when to use charts and when to use table
+what kind of visual image to use to represent which kind of data
+
+BAR CHARTS
+comparison between different categories. 
+Can apply sorting
+2 types : horizontal and vertical
+Horizontal : good for sorting
+vertical : show change over period of time. Ordinal data. Time series data.
+Good practice to start from zero value.
+
+
+STACKED CHART
+used to compare part to whole relationships for multiple categories.
+Type of a bar chart
+
+WATERFALL CHART
+cumulative representation/visualization to visualize certain pieces
+
+LINE CHART
+used to display quantitative values over a continuous interval of time
+
+LINE VS BAR
+BAR: Nominal discrete values
+LINE : continuous values
+
+SCATTER
+represents correlations
+Display relationship between two numerals
+Label only key data points
+
+BUBBLE CHARTS
+Represent nominal comparison.
+
+HEAT MAPS
+Display categorical data using color intensity
+Tabular data
+color ranging is used
+
+TREE MAPS
+hierarchical data
+nested rectangles
+bigger rectangle more dense
+color ranging 
+
+AREA CHARTS
+Used like line chart
+Area beneath line have color to show volume
+show trends and relationship
+quantitative analysis
+
+PIE CHART
+comparison
+adds up to 100%
+donut chart is a subgroup of it
+display composition of something
+
+HISTOGRAMS
+study distribution of data
+comparison of data
+distribution over a continuous variable
+
+BULLET CHARTS
+vertical or horizontal representation
+compare data measures
+
+WORD CLOUDS
+text analysis
+frequency of words
+
+MAPS
+Geospatial data
+
+CHLOROPLETH MAPS
+heat map for geographical areas
+
+SYMBOL MAPS
+
+
+LECTURE : 26th November
+POWER BI
+
+Fact: numerical. Thing which can be measured.
+Dimension :  attribute for that data. Characteristics of the person
+Relationship between facts and dimension.
+relationship can be of primary key and foreign key.
+
+Create visualization
+first create a canvas
+low code platform - power BI
+If move mouse over a chart, it can show the values (interactive visualization)
+If you click on a chart, click on a specific area in a chart, it can provide more details for that area (interactive)
+
+Create a dashboard
+
+workplace
+when publishing a report we need a workplace
+when we need to share the report, we create a shared workplace.
+sample reports in the learning section of the power BI.
+
+
+LECTURE 3rd December
+Link for semantic model creation with relationships between tables, adding calculated groups and fields : https://microsoftlearning.github.io/mslearn-fabric/Instructions/Labs/15-design-scalable-semantic-models.html
+
+
+
+LECTURE 5th December
+link for performance analyzer : https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-performance-analyzer
+
+
+DATABRICKS
+DIP : Data Intelligence Platform
+delta sharing :  open source sharing 
+build lake house architecture : combining datalake and data warehouse
+provides ACID compliance : do incremental update
+big data was write once and read many but databricks is changing that
+evolution with delta format (its is a file format, open source). capture live data and update records and values. capture the transaction data in delta format.
+features like SQL, analysis, dashboards with BI tools, AI capabilities
+
+Bronze, silver, gold layers
+Delta live tables basic underlying data structure
+Workflows : orchestration, job scheduling, 
+
+DATABRICKS INFRASTRUCTURE
+data plane and compute plane are outside (Elastic compute [cluster, SQL warehouse, storage {S3, ADLS, GCS}])
+Control plane (Unity catalog [metastore, access control, workspace management], web app, mosaicAI, workflows, git folders, notebooks, DBSQL)
+
+LECTURE 10th December
+control plane is managed by databricks, data plane and compute plane are outside
+compute part are managed by the cloud VM provided by the vender. Mostly uses Jupyter notebook. 
+
+SERVERLESS
+databricks handles the provisioning of the resources. No need to handle it ourselves. Costlier but faster and better resource management. Databricks itself applies proper optimizes based on the data size and other things.
+
+medallion architecture in data base.
+Raw data in bronze layer. Improvement on that data then stored in silver layer and then gold layer.
+Then it is converted to delta format.
+
+Delta sharing
+Share data with external entities. Data accessible only on the authorized part for the user. These information regarding the auth and access is present in the metastore. 
+
+Unity catalog
+Talks to all the different components in the databricks, from data to compute, scheduling, governance, etc.
+30 developers can be using 30 different workspaces, but the governance can be done using the unity catalog.
+
+Unity catalog federation 
+Data is present in other server like redshift, snowflake. The compute code is sent to that server and is computed there itself, not in the databricks server. Good for testing and development purpose. For high volume it is not recommended. For high volume better to load the data in the bronze layer and use the spark and databricks optimization for the compute.
+
+Delta format is abstraction of parquet format
+
+Metastore (external storage access, catalog [schema], query federation, delta sharing)
+
+Link for 
+https://docs.databricks.com/en/delta/tutorial.html
+
+LECTURE : 12th December
+DELTA LAKE OVERVIEW
+KEY FEATURES
+ACID transactions
+DML operations
+history keeping
+
+Delta Lake with UniForm
+Rise of open table formats
+Delta lake, Hudi, Iceberg
+
+managed table : table is attached to schema. If the table is dropped or deleted the data is deleted with the schema.
+external table : table in different location. Whenever we drop or delete the table only the schema is deleted, the table data is persisted in that location.
+
+LECTURE : 17th December 
+WORKFLOWS
+Can define different types of workflows, like notebook, python scripts, python wheel, etc.
+Python wheel file : 
+run method is the entry point
+command to create the wheel file
+push wheel file name in database workflow
+select workflow -> wheel file name -> entry point
+
+Data is stored in parquet file format.
+Transaction logs is stored in json file format in the databricks platform.
+
+LECTURE 19th DECEMBER
+Streaming
+
+unified API for streaming and batch processing. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

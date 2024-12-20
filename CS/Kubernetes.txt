@@ -1,0 +1,40 @@
+Kubernetes (K8s) : Container Orchestration Tool
+
+What were the early setup and scenario of deploying an application before Kubernetes.
+To deploy an application, we required a machine which will have a operating system, some processing hardwares and network capabilities.
+
+1. Bare Metal 
+   We bought physical servers on which we would deploy our application. 
+   What were the issues faced in with this approach ?
+   Our application might need things like radis, postgres etc. So the same things with the same version need to be downloaded in the server.
+   First is we need to be in a contract with the hard ware seller. When the workload on our application increases we need to increase its capacity, computing power. For that we need to buy more memory and CPU. These we need to manage manually.
+
+2. AWS (cloud services)
+   Cloud came into picture and started providing infra to developers. Now people did not have to buy a physical machine themselves. The cloud providers would provide the servers, virtual machines, etc. This simplified the process of getting the server much easier and accessible to all. 
+   Different cloud services also provided different features like load balancing, auto scaling, etc. But different cloud services required different configuration. Like if I am using AWS, AWS provided me with the ELB (Elastic load balancing), auto scaling features. If I wanted to shift to another cloud provider, then all this setup is needed to be done their as well. Also other cloud provided would not be providing features like load balancing, auto scaling etc. Those need to be handled seperatly in the other cloud provider. Thus, we fall into the scenario of vendor lock in as switching from one provider to another is very tedious and difficult task.
+   Another issue is the operating system. Suppose in our local system we are using windows, but in the cloud, they are providing linux as the operting system. Thus the saying of 'It was working in my machine', will come into picture. 
+
+3. To combact the 'It was working in my machine' issue, came the concept of virtualization (virtual machines). Virtual machines will have the operating system, application code and the dependencies. Now this virtual machine could be shared between people and used to run the application. But the issue with this approach was that, the virtual machines were big in size due to the presense of operating system and thus scaling it and sharing was difficult. 
+
+4. Came the concept of containerization. The containers will have an image of the OS, but uses the host machines kernel. The containers were light-weight and support easy sharing, scaling and similar behaviour when running in different machines. But manually managing the task of scaling and health check of the containers is very tedius task. The management of containers like handling scaling, health check etc, is called orchestration. The auto scaling feature is provided by some cloud providers. But we still fall under the issue of vendor lock in. 
+
+5. Google was amoungst the early organisation to be using the containers and facing the issue of orchestration of containers. Google build an in-house solution of it called "Borg". With the understanding of Borg they built a new project which would be generic and provide a abstracting for the container orchestration. This project is called Kubernetes. It is open-source and was given Cloud Foundation Cloud Native org. 
+
+ARCHITECTURE OF KUBERNETES
+CONTROL PLANE 
+Control plane is a physical machine whose task is like a manager. It overlook the handling of auto scaling, health check etc. It has 5 components, API server, Controller, etdc key-value store, scheduler, cloud control manager.
+
+API server : The module which talks to the user. Based on the input it passes the instructions to the controller and uses etdc as a storage.
+Controller : This handles things like creation of pods. Takes instructions from API server and executes task accordingly.
+etdc key-value store : From the name it is clear that it is the storage unit. It mainly stores the metadata, state of the pods in the differnt worker node, authorization details etc.
+Scheduler : It assigns different pods to different worker nodes. The distribution based on availability is handled by it.
+Cloud control manager : This component talks to the hosted cloud and fetches the services provided by it. It also handles task like creation of load balancing, etc. This component is one of the main reason for abstraction of configuration based on cloud provider. Suppose we need a load balancer. This thing is not created by the control plane. This is something which the cloud service will provide. But for us, we just need to provide the configuration to the CCM and it is manage with the cloud service and provide us the load balancer.
+
+WORKER NODE
+Worker node is also a physical machine. This is where the actual execution of the application takes place. It contains mainly three components : kubelet, kube proxy and container runtime interface.
+Kubelet : This component talks with the API server of the control plane and takes instructions from there and executes.
+Kube proxy : This is the networking layer of the worker node. 
+Container runtime interface : To run the containers we need container runtime interfaces like containerd, docker-run, etc. The pods made by controller of the control plane are placed here and executed. 
+
+Pods for now can be considers a container where the application will run. 
+   

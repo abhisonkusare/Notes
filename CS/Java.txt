@@ -1,0 +1,9 @@
+local variables inside lambda expression should be final or effectively final.
+   - meaning one cannot change the value of local variable in a lambda expression
+
+String
+ - strings are immutable
+ - StringBuilder in Java represents a mutable sequence of characters.
+ - use stringBuilder() if wanna make add strings
+    - then use toString() function to get a String object;
+ - String Builder is not thread-safe and high in performance compared to String buffer.
